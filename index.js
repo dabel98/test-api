@@ -1,50 +1,41 @@
 const express = require('express');
 
-const dataStore = [
-  { id: 1, name: "John Doe" },
-  { id: 2, name: "Jane Doe" },
-];
-
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-
-app.get("/api/users", (req, res) => {
-  res.json(dataStore);
-});
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
 
-app.get("/api/echeance", (req, res) => {
-  // Récupérer les paramètres de la requête HTTP
-  const { montant, mensualite, date } = req.query;
+/*
+	Routes
+*/
 
-  // Convertir les paramètres en nombres si nécessaire
-  const montantNumber = parseFloat(montant);
-  const mensualiteNumber = parseFloat(mensualite);
-  // Appeler la fonction genererEcheancier
-  const echeancier = genererEcheancier(montantNumber, mensualiteNumber, date);
+app.get("/api/numberToLetter", (req, res) => {
+
+  // Récupérer les paramètres de la requête HTTP
+  const { chiffre } = req.query;
+
+  // Appeler la fonction 
+  const lettre = NumberToLetter( chiffre );
 
   // Retourner le résultat au client
-  res.json({ echeancier });
+  res.json({ lettre });
+
 });
 
 
-app.get("/api/montant", (req, res) => {
-  // Récupérer les paramètres de la requête HTTP
-  const { montant } = req.query;
+/*
+	Echeancier
+*/
 
-  // Appeler la fonction genererEcheancier
-  const resultat = NumberToLetter(montant);
 
-  // Retourner le résultat au client
-  res.json({ resultat });
-});
-
+/*
+	NumberToLetter
+*/
 
 function Unite( nombre ){
 	var unite;
@@ -60,7 +51,7 @@ function Unite( nombre ){
 		case 8: unite = "huit"; 	break;
 		case 9: unite = "neuf"; 	break;
     default: unite = "error"; break;
-	}//fin switch
+	}
 	return unite;
 }
 
@@ -85,7 +76,7 @@ function Dizaine( nombre ){
 		case 80: dizaine = "quatre-vingt"; break;
 		case 90: dizaine = "quatre-vingt-dix"; break;
     default: dizaine = "error"; break;
-	}//fin switch
+	}
 	return dizaine;
 }
 
@@ -94,7 +85,6 @@ function NumberToLetter( nombre ){
 	var i, j, n, quotient, reste, nb ;
 	var ch
 	var numberToLetter='';
-	//__________________________________
 	
 	if(  nombre.toString().replace( / /gi, "" ).length > 15  )	return "dépassement de capacité";
 	if(  isNaN(nombre.toString().replace( / /gi, "" ))  )		return "Nombre non valide";
@@ -207,35 +197,12 @@ function NumberToLetter( nombre ){
 						if(  quotient > 1 && reste != 0   ) numberToLetter = NumberToLetter(quotient) + " billions " + NumberToLetter(reste);
 					    break; 	
       default: break;
-	 }//fin switch
-	 /*respect de l'accord de quatre-vingt*/
+	 }
+
 	 if(  numberToLetter.substr(numberToLetter.length-"quatre-vingt".length,"quatre-vingt".length) == "quatre-vingt"  ) numberToLetter = numberToLetter + "s";
 	 
 	 return numberToLetter;
 }
-
-function genererEcheancier(montant, mensualite, dateString) {
-  let echeancier = [];
-  let date = new Date(dateString);
-  let montantDejaPaye = 0;
-  let nombreEcheances = Math.ceil(montant / mensualite);
-  
-  for (let i = 0; i < nombreEcheances; i++) {
-    let montantEcheance = (i === nombreEcheances - 1) ? montant - (mensualite * i) : mensualite;
-    montantDejaPaye += montantEcheance;
-    let echeance = {
-      date: date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }),
-      montant: montantEcheance,
-      montantDejaPaye: montantDejaPaye
-    };
-    
-    echeancier.push(echeance);
-    date.setMonth(date.getMonth() + 1);
-  }
-  
-  return echeancier;
-}
-
 
 
 
