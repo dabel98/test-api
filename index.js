@@ -46,29 +46,6 @@ app.get("/api/montant", (req, res) => {
 });
 
 
-function genererEcheancier(montant, mensualite, dateString) {
-  let echeancier = [];
-  let date = new Date(dateString);
-  let montantDejaPaye = 0;
-  let nombreEcheances = Math.ceil(montant / mensualite);
-  
-  for (let i = 0; i < nombreEcheances; i++) {
-    let montantEcheance = (i === nombreEcheances - 1) ? montant - (mensualite * i) : mensualite;
-    montantDejaPaye += montantEcheance;
-    let echeance = {
-      date: new Date(date),
-      montant: montantEcheance,
-      montantDejaPaye: montantDejaPaye
-    };
-    
-    echeancier.push(echeance);
-    date.setMonth(date.getMonth() + 1);
-  }
-  
-  return echeancier;
-}
-
-
 function Unite( nombre ){
 	var unite;
 	switch( nombre ){
@@ -236,3 +213,32 @@ function NumberToLetter( nombre ){
 	 
 	 return numberToLetter;
 }
+
+function genererEcheancier(montant, mensualite, dateString) {
+  let echeancier = [];
+  let date = new Date(dateString);
+  let montantDejaPaye = 0;
+  let nombreEcheances = Math.ceil(montant / mensualite);
+  
+  for (let i = 0; i < nombreEcheances; i++) {
+    let montantEcheance = (i === nombreEcheances - 1) ? montant - (mensualite * i) : mensualite;
+    montantDejaPaye += montantEcheance;
+    let echeance = {
+      date: date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+      montant: montantEcheance,
+      montantDejaPaye: montantDejaPaye
+    };
+    
+    echeancier.push(echeance);
+    date.setMonth(date.getMonth() + 1);
+  }
+  
+  return echeancier;
+}
+
+
+
+
+
+
+
