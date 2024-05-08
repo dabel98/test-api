@@ -14,6 +14,20 @@ app.listen(PORT, () => {
 	Routes
 */
 
+app.get("/api/echeance", (req, res) => {
+
+  const { montant, mensualite, date } = req.query;
+
+  const montantNumber = parseFloat(montant);
+
+  const mensualiteNumber = parseFloat(mensualite);
+
+  const echeancier = genererEcheancier( montantNumber, mensualiteNumber, date );
+
+  res.json({ echeancier });
+
+});
+
 app.get("/api/numberToLetter", (req, res) => {
 
   // Récupérer les paramètres de la requête HTTP
@@ -31,6 +45,36 @@ app.get("/api/numberToLetter", (req, res) => {
 /*
 	Echeancier
 */
+
+
+function genererEcheancier( montant, mensualite, dateString ) {
+
+  let echeancier = [];
+
+  let date = new Date(dateString);
+
+  for (let i = 0; i < mensualite; i++) {
+
+	montantEcheance = Math.ceil( montant / mensualite );
+
+	if ( i==0){
+		montantEcheance +=  montant - (mensualite * ( Math.ceil( montant / mensualite ) ) )
+	}
+
+    let echeance = {
+
+      date: date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+      montant: montantEcheance
+    };
+    
+    echeancier.push(echeance);
+    date.setMonth(date.getMonth() + 1);
+  }
+  
+  return echeancier;
+
+}
+
 
 
 /*
