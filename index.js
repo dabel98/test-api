@@ -50,7 +50,7 @@ app.get("/api/numberToLetter", (req, res) => {
 function genererEcheancier( montant, mensualite, dateString ) {
 
   let echeancier = [];
-
+ 
   let date = new Date(dateString);
 
   for (let i = 0; i < mensualite; i++) {
@@ -63,8 +63,9 @@ function genererEcheancier( montant, mensualite, dateString ) {
 
     let echeance = {
 
-      date: date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }),
-      montant: montantEcheance
+      dateLimiteReglement: date.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+      montantEcheanceMensuelle: montantEcheance,
+	  numeroMensualite: i + 1
     };
     
     echeancier.push(echeance);
